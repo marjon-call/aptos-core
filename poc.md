@@ -6,30 +6,46 @@ This is a security audit of the **Aptos Network** node codebase (`aptos-core`, m
 The audit targets the Rust node implementation and Move framework modules.
 Bug bounty hosted on **HackenProof** with rewards up to **$1,000,000** for critical findings.
 
-## PoC Template
+## PoC Templates
 
-The PoC template is located at:
+### Node-Level PoC (primary)
+
+Tests the node itself — config, network setup, service initialization.
+
+```
+aptos-node/src/poc.rs
+```
+
+```bash
+cargo test -p aptos-node --lib -- poc::test_poc --nocapture
+```
+
+**Helpers available:**
+- `default_validator_config()` — lightweight config, no keys (for config-only tests)
+- `full_test_config()` — full genesis + keys + identity (for network/identity tests)
+- `mock_event_service()` — mock event subscription service
+- `setup_test_networks(config, event_service)` — set up node networks (needs full_test_config)
+- `config_with_override(yaml)` — merge YAML override into default config
+
+### Move-Level PoC (supplementary)
+
+Tests Move framework interactions — staking, transfers, delegation pools, governance.
 
 ```
 aptos-move/e2e-move-tests/src/tests/poc.rs
 ```
 
-### Running the PoC
-
 ```bash
 cargo test -p e2e-move-tests -- poc::test_poc --nocapture
 ```
 
-### How It Works
+### How They Work
 
-The template uses `MoveHarness` — an in-memory Aptos executor that simulates the full blockchain environment including:
-- Genesis initialization with a validator
-- Account creation and funding
-- Transaction execution (entry functions, view functions, block execution)
-- Epoch advancement and time manipulation
-- State reads (stake pools, balances, validator sets, etc.)
+Both templates run entirely locally — no RPC or network connection needed.
 
-No RPC or network connection is needed — everything runs locally against simulated genesis state.
+The **node-level** template uses `NodeConfig` and the node's internal modules to test config parsing, network setup, and service wiring.
+
+The **Move-level** template uses `MoveHarness` to simulate the full blockchain environment including account creation, transaction execution, epoch advancement, and state reads.
 
 ### Template Helpers Available
 

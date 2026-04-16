@@ -15,6 +15,8 @@ pub mod utils;
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod poc;
 
 use crate::utils::ensure_max_open_files_limit;
 use anyhow::{anyhow, Context};
