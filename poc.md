@@ -3,7 +3,7 @@
 ## Overview
 
 This is a security audit of the **Aptos Network** node codebase (`aptos-core`, mainnet branch).
-The audit targets the Rust node implementation and Move framework modules.
+The audit targets the Rust node implementation (`aptos-node/src/`).
 Bug bounty hosted on **HackenProof** with rewards up to **$1,000,000** for critical findings.
 
 ## PoC Templates
@@ -100,7 +100,17 @@ assert_success!(status);
 assert_abort!(status, error_code);
 ```
 
-### Gotchas
+### Node-Level Gotchas
+
+- **default_validator_config()** has NO keys/identity — use `full_test_config()` for anything involving network setup or identity
+- **Network setup panics** if `mutual_authentication` is disabled on validator network
+- **expose_system_information** defaults to `true` — potential info leakage surface
+- **Admin service** defaults to disabled (`None`)
+- **full_test_config()** generates real genesis, keys, waypoint — takes ~2-3s
+- **Config merging** via serde_yaml overlay preserves unset defaults
+- **--lib flag required**: `cargo test -p aptos-node --lib` (without `--lib` it also runs binary tests)
+
+### Move-Level Gotchas
 
 - **BCS deserialization**: Does not support `serde::de::IgnoredAny`. Use exact field types or view functions.
 - **View functions**: Not all Move functions have `#[view]`. Check the source before calling.
