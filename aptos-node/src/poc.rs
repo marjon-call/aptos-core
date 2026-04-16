@@ -14,6 +14,8 @@
 //   - expose_system_information defaults to TRUE — potential info leakage
 //   - Config merging via serde_yaml overlay preserves unset defaults
 //   - full_test_config() generates real genesis, keys, waypoint — takes ~2-3s
+//   - Admin service defaults to disabled (None)
+//   - Use --lib flag when running: cargo test -p aptos-node --lib
 
 #![allow(unused_imports, dead_code, unused_variables)]
 
